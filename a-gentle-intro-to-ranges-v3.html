@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>A Gentle Introduction to Ranges v3</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="./fonts.css" />
+    <link rel="stylesheet" href="./open-sans.css" />
+    <link rel="stylesheet" href="./mermaid.forest.css">
+    <link rel="stylesheet" href="./a-gentle-intro-to-github.css">
+    <link rel="stylesheet" type="text/css" href="asciinema-player.css" />
+    <style>
+        @page {
+            size: 1210px 681px;
+            margin: 0;
+        }
+        
+        @media print {
+            .remark-slide-scaler {
+                width: 100% !important;
+                height: 100% !important;
+                transform: scale(1) !important;
+                top: 0 !important;
+                left: 0 !important;
+            }
+        }
+        
+        @font-face {
+            font-family: 'AtF Spark Bar Medium';
+            src: url("fonts/AtF_Spark/Spark - Bar - Medium.otf");
+        }
+        
+        body {
+            /* font-family: 'Droid Serif'; */
+            font-family: 'Open Sans';
+        }
+        
+        h1,
+        h2,
+        h3 {
+            font-family: 'Yanone Kaffeesatz';
+            font-weight: normal;
+        }
+        
+        a:link {
+            color: darkgreen;
+            background-color: transparent;
+            text-decoration: none;
+            border-bottom: 1px dashed yellow;
+        }
+        
+        a:visited {
+            color: darkblue;
+            background-color: transparent;
+            text-decoration: none;
+            border-bottom-color: gold;
+        }
+        
+        a:hover {
+            color: red;
+            background-color: transparent;
+            text-decoration: none;
+        }
+        
+        a:active {
+            color: yellow;
+            background-color: transparent;
+            text-decoration: underline;
+        }
+        
+        .slides {
+            font-size: 20pt;
+        }
+        
+        .remark-code,
+        .remark-code-line,
+        .remark-inline-code {
+            font-family: 'Droid Sans Mono';
+            font-weight: bold;
+            color: darkblue;
+            font-size: 18pt;
+        }
+        
+        .remark-code {
+            background: #111111;
+            border-radius: 35px;
+        }
+        
+        .remark-slide-content {
+            padding-top: 10px;
+            padding-left: 5%;
+            padding-right: 5%;
+            padding-bottom: 4em;
+            font-size: 18pt;
+        }
+        
+        div.footer {
+            position: absolute;
+            bottom: 12px;
+            width: 100%;
+            opacity: .6;
+            font-family: 'Yanone Kaffeesatz';
+            font-weight: normal;
+        }
+        
+        .footer .flexcontainer {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            margin-right: 190px;
+        }
+        
+        .border {
+            border: 2px solid steelblue;
+        }
+        
+        div.emscripten-output {
+            font-family: 'Droid Sans Mono';
+            font-size: 14pt;
+            border: 2px solid steelblue;
+            padding: 5px;
+            background: black;
+            color: lightgreen;
+        }
+        
+        img {
+            width: 80%;
+        }
+        
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        
+        th,
+        td {
+            padding: 5px;
+            border: 1px solid steelblue;
+        }
+        
+        td {
+            color: #7f0000;
+        }
+        
+        th {
+            border-bottom: 3px solid steelblue;
+            color: black;
+        }
+        
+        li {
+            list-style-type: square
+        }
+        
+        pre {
+            margin: 0.2em 0px 0.2em
+        }
+        
+        .accent {
+            color: seagreen
+        }
+        
+        .image-fixed-20 img {
+            width: 20pt
+        }
+        
+        .image-fixed-40 img {
+            width: 40pt
+        }
+        
+        .image-10 img {
+            width: 10%
+        }
+        
+        .image-20 img {
+            width: 20%
+        }
+        
+        .image-30 img {
+            width: 30%
+        }
+        
+        .image-40 img {
+            width: 40%
+        }
+        
+        .image-50 img {
+            width: 50%
+        }
+        
+        .image-60 img {
+            width: 60%
+        }
+        
+        .image-70 img {
+            width: 70%
+        }
+        
+        .image-80 img {
+            width: 80%
+        }
+        
+        .column:first-of-type {
+            float: left
+        }
+        
+        .column:last-of-type {
+            float: right
+        }
+        
+        .split-30 .column:first-of-type {
+            width: 30%
+        }
+        
+        .split-30 .column:last-of-type {
+            width: 70%
+        }
+        
+        .split-40 .column:first-of-type {
+            width: 40%
+        }
+        
+        .split-40 .column:last-of-type {
+            width: 60%
+        }
+        
+        .split-48 .column:first-of-type {
+            width: 48%
+        }
+        
+        .split-48 .column:last-of-type {
+            width: 48%
+        }
+        
+        .split-50 .column:first-of-type {
+            width: 50%
+        }
+        
+        .split-50 .column:last-of-type {
+            width: 50%
+        }
+        
+        .split-55 .column:first-of-type {
+            width: 55%
+        }
+        
+        .split-55 .column:last-of-type {
+            width: 45%
+        }
+        
+        .split-60 .column:first-of-type {
+            width: 60%
+        }
+        
+        .split-60 .column:last-of-type {
+            width: 40%
+        }
+        
+        .split-65 .column:first-of-type {
+            width: 65%
+        }
+        
+        .split-65 .column:last-of-type {
+            width: 35%
+        }
+        
+        .split-70 .column:first-of-type {
+            width: 70%
+        }
+        
+        .split-70 .column:last-of-type {
+            width: 30%
+        }
+        
+        .column ul:first-of-type {
+            margin: .2em
+        }
+        
+        blockquote {
+            background: lightgray;
+            border-left: 10px solid deepskyblue;
+            margin: 1.5em 0px;
+            padding: 0.5em 10px;
+            quotes: "\201C""\201D""\2018""\2019";
+        }
+        
+        blockquote:before {
+            color: #ccc;
+            font-size: 4em;
+            line-height: 0.1em;
+            margin-right: 0.25em;
+            vertical-align: -0.4em;
+        }
+        
+        blockquote p {
+            display: inline;
+        }
+        
+        .mermaid p {
+            display: inline;
+        }
+        
+        .mermaid svg {
+            display: inline;
+            margin: auto;
+            max-height: 480px
+        }
+        
+        .vertical-skip-5 {
+            margin-bottom: 5%;
+        }
+        
+        .vertical-skip-10 {
+            margin-bottom: 10%;
+        }
+        
+        .vertical-skip-20 {
+            margin-bottom: 20%;
+        }
+        
+        .wrapper {
+            /* used for the GitHub Iframe */
+            position: relative;
+            z-index: 1;
+            display: inline-block;
+        }
+        
+        .hidelogo {
+            /* used for the GitHub Iframe */
+            position: absolute;
+            width: 150px;
+            height: 40px;
+            background: #222;
+            right: 0px;
+            bottom: 6px;
+            z-index: 999;
+            display: block;
+            color: #fff;
+        }
+        
+        .red {
+            color: red;
+        }
+        
+        .fixed-pos-lrc {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+        }
+        
+        .fixed-pos-nearly-lrc {
+            position: fixed;
+            bottom: 12%;
+            right: 5px;
+        }
+        
+        .spark-standfirst,
+        .spark-bar-medium {
+            font-variant-ligatures: contextual;
+            -moz-font-feature-settings: "calt";
+            -webkit-font-feature-settings: "calt";
+            font-feature-settings: "calt";
+            font-family: 'AtF Spark Bar Medium';
+            letter-spacing: 0em;
+        }
+    </style>
+</head>
+
+
+<textarea id="source">
+
+layout: true
+<div class="footer"><div class="flexcontainer"><span>.body[[https://pem-aachen.de](http://pem-aachen.de)]</span>
+<span>.center[C++ User Group Aachen 2018]</span><span>.body[&copy; 2017 Markus Werle ([github](http://github.com/daixtrose) [linkedin](https://www.linkedin.com/in/markus-werle-04305a12a/))]</span></div></div>
+
+---
+
+class: middle
+template: inverse
+
+.center[
+
+
+# A Gentle Introduction to Ranges v3
+
+
+.accent[
+### Say Goodbye to STL as You (Probably Don't) Know It
+]
+
+
+]
+
+
+---
+
+layout: false
+
+
+# Gimme that Old Time Religion 
+
+.split-70[
+.column[
+
+```c++
+std::vector<int> v; 
+v.push_back(1); v.push_back(2); 
+v.push_back(3); v.push_back(4);  
+
+for (std::vector<int>::const_iterator it = 
+        v.begin(); 
+        it != v.end(); ++it) {
+    int value =  *it;
+    // do something with the value
+```
+or 
+```c++
+std::transform (foo.begin(), foo.end(), 
+    bar.begin(), 
+    multiplyByTwo); // defined as std::function 
+```
+]
+.column[
+
+![](images/EffectiveSTLCover.jpeg) 
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+
+]
+] 
+
+---
+
+# Gimme that Old Time Religion (C++ 14 version 1)
+
+.split-70[
+.column[
+
+```c++
+std::vector<int> v{1, 2, 3, 4};  
+
+for (auto it = std::begin(v);
+        it != std::end(v); ++it) {
+        int value =  *it;
+        // do something with the value
+}
+```
+
+```c++
+std::transform (std::begin(foo), std::end(foo), 
+    std::begin(bar),  
+    (auto v) { return 2 * v; });
+```
+]
+.column[
+
+STL code tends to look like this after a while:
+
+![](images/matrix_effect_by_legendaryghost.png)
+(http://fav.me/d1m07e3)
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+
+]
+] 
+
+---
+
+# Gimme that Old Time Religion (C++ 14 version 2)
+
+```c++
+std::vector<int> v{1, 2, 3, 4};  
+
+// The new for-loop works for complete ranges in specific situations
+// and should be used where appropriate    
+for (auto value : v) 
+    // do something with the value
+}
+```
+
+```c++
+std::transform (std::begin(foo), std::end(foo), 
+    std::begin(bar),  
+    (auto v) { return 2 * v; });
+```
+
+
+
+---
+
+# A Crisis
+
+Andrei Alexandrescu: ["Iterators Must Go" (2009)](https://accu.org/content/conf2009/AndreiAlexandrescu_iterators-must-go.pdf), 
+Video [here](https://archive.org/details/AndreiAlexandrescuKeynoteBoostcon2009)
+
+# Eric Niebler's Range-v3
+
+- GitHub Repository at https://github.com/ericniebler/range-v3
+- ISO Standard Proposal 
+  - https://ericniebler.github.io/std/wg21/D4128.html
+  - TS: https://www.iso.org/obp/ui/#iso:std:iso-iec:ts:21425:ed-1:v1:en
+  - http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4651.pdf 
+- Explanations about iterators and why we need a sentinel   
+  - http://ericniebler.com/2015/02/03/iterators-plus-plus-part-1/
+
+
+```cplusplus
+#include <range/v3/all.hpp>
+```
+
+---
+
+# Eric Niebler's Range-v3
+
+.split-50[
+.column[
+## October 2014
+![](images/NieblerTweet1.png) 
+]
+.column[
+## December 2017
+![](images/NieblerTweet2.png) 
+]
+] 
+
+
+---
+
+## Get Rid of Begin/End
+
+```c++
+std::vector<int> v{1, 2, 3, 4};  
+```
+
+### STL Solution
+```c++
+std::copy(std::begin(v), std::end(v), 
+    std::ostream_iterator<int>(std::cout, ' '));
+```
+
+### Ranges-v3
+
+```c++
+ranges::copy(v, 
+    ranges::ostream_iterator<int>(std::cout, ' '));  
+```
+
+---
+
+## Clear, Concise Code that is Easy to Reason About
+
+### STL Solution
+
+```c++
+auto complexFun = [](auto v) { /* ... */ return result; };
+std::transform(std::begin(a), std::end(a), std::begin(b), complexFun);
+```
+
+### Ranges-v3
+
+This is [Casey's Solution](https://stackoverflow.com/questions/47831026/replacing-data-with-range-v3):
+
+```c++
+auto b = a | ranges::view::transform(complexFun) | ranges::to_vector;
+```
+
+---
+
+## Clear, Concise Code that is Easy to Reason About
+
+This is [Casey's Solution](https://stackoverflow.com/questions/47831026/replacing-data-with-range-v3):
+
+```c++
+auto b = a | ranges::view::transform(complexFun) | ranges::to_vector;
+```
+
+If you already have a destination vector whose capacity you want to reuse:
+
+```c++
+b.clear(); // Assuming b already contains junk
+b |= ranges::action::push_back(a | ranges::view::transform(complexFun));
+``` 
+
+> In both cases, `range-v3` is smart enough to reserve capacity in the destination vector for 
+> `ranges::size(a | ranges::view::transform(complexFun))` elements to avoid copies due to reallocation.
+
+
+---
+
+# Clear, Concise Code that is Easy to Reason About
+
+This code was posted by [Eric Niebler on Stackoverflow](https://stackoverflow.com/questions/45212965/ranges-of-ranges-to-vector-of-vectors): 
+```c++
+std::vector<int> rng {0,1,2,3,4,5,6,7,8,9};
+auto groups = ranges::view::group_by(rng, [](int i, int j){
+    return j/3 == i/3;
+});
+
+std::vector<std::vector<int>> vs = groups; // WORKS
+
+// Display the result: [[0,1,2],[3,4,5],[6,7,8],[9]]
+std::cout << ranges::view::transform(vs, ranges::view::all) << std::endl;
+```
+
+---
+
+# A Real World Example: LIDAR Scan Data 
+
+.split-70[
+.column[
+![](images/LIDAR_Scan.png) 
+]
+.column[
+
+]
+]
+
+### Tasks 
+
+- Perform a segmentation
+- Remove NaNs and Infs 
+- Select the most likely segment
+- Convert polar coordinates to cartesian
+- Revert the order of the values
+
+> Avoid copies!
+
+
+
+
+
+## Remove NaNs and Infs
+
+```c++
+auto segmentation(
+    std::vector<PolarCoordinate> const& coordinates, 
+    /* ... */)
+{
+    using `ranges::action::remove_if`
+     
+    auto is_inf_or_nan = 
+        [](double d) { return std::isinf(d) || std::isnan(d); };
+
+    auto distance_is_inf_or_nan = 
+        [=](PolarCoordinate const& pc) { 
+            return is_inf_or_nan(pc.distance); 
+        };
+
+    auto cleanCoordinates = // the return type is a view
+        `coordinates | remove_if(distance_is_inf_or_nan)`;    
+    
+```
+
+---
+
+## Segmentation
+
+```c++
+std::vector<std::vector<PolarCoordinate>>
+segmentation(std::vector<PolarCoordinate> const& coordinates, /* ... */)
+{
+    using `ranges::action::split`;
+
+    auto is_inf_or_nan = 
+        [](double d) { return std::isinf(d) || std::isnan(d); };
+
+    auto distance_is_inf_or_nan = 
+        [=](PolarCoordinate const& pc) { 
+            return is_inf_or_nan(pc.distance); };
+
+    auto split_at_nans = `split(coordinates, distance_is_inf_or_nan)`;
+    return split_at_nans; // view converts automagically to vector!
+}
+```
+
+---
+
+## Polar to Cartesian (Good Old Religion Version)
+
+```c++
+CartesianCoordinate polarToCartesian(PolarCoordinate const pc)
+{
+   // ...
+}
+// ...
+std::vector<PolarCoordinates> polarCoordinates; 
+std::vector<CartesianCoordinates> cartesianCoordinates;
+cartesianCoordinates.`reserve`(polarCoordinates.size()); 
+
+std::transform(polarCoordinates.begin(), // mention once 
+               polarCoordinates.end(),   // mention twice
+               std::back_inserter(cartesianCoordinates),
+               &polarToCartesian);
+```
+
+
+
+---
+
+## Polar to Cartesian
+
+```c++
+ CartesianCoordinate polarToCartesian(PolarCoordinate const pc)
+ {
+     // ...
+ }
+
+ // ...
+ using ranges::view::transform;
+ std::vector<PolarCoordinates> polarCoordinates; 
+
+ `auto` cartesianCoordinates = // this is a view, no copies! 
+    polarCoordinates `| transform(polarToCartesian)`;
+```
+
+---
+
+```c++
+std::vector<PolarCoordinate>
+selectNearestSegmentToAngleZero(
+    std::vector<std::vector<PolarCoordinate>> const& segments)
+{
+    // ... using declaratives omitted ...
+    auto average_angle = [](auto&& coordinates) {
+        auto angles = coordinates 
+            | `transform`([](auto pc) { return pc.angle; });
+        auto sumOfAngles = `accumulate`(angles, 0.0);
+        auto result = sumOfAngles 
+            / static_cast<double>(`size`(coordinates));
+        return result;
+    };
+    auto averageValuesAbs = segments 
+        | `transform`(average_angle) // yields a range of average values 
+        | `transform`([](auto v) { return std::abs(v); });
+    auto index = `distance`(averageValuesAbs.begin(), 
+        `min_element`(averageValuesAbs));
+
+    return segments[index];
+}
+```
+
+
+---
+
+## How I lost my reputation
+
+```c++
+std::vector<std::vector<PolarCoordinate>> segments; 
+auto segmentsReversedViaNestedTransform = segments
+  | `transform`([](auto s) { 
+      return s | `transform`(polarToCartesian) | `reverse`; 
+    });
+
+std::vector<PolarCoordinate> firstSegmentReversed = segments[0] | `reverse`;
+
+for (auto const& point : firstSegmentReversed) {
+    std::cerr << point.first << ", " << point.second << std::endl;
+}
+        
+for (auto const& point : *begin(segmentsReversedViaNestedTransform)) {
+    std::cerr << point.first << ", " << point.second << std::endl;
+}
+```
+
+---
+
+## How I lost my reputation
+
+```c++
+std::vector<std::vector<PolarCoordinate>> segments; 
+std::vector<PolarCoordinate> firstSegmentReversed = segments[0] | reverse;
+
+for (auto const& point : firstSegmentReversed) {
+    std::cerr << point.first << ", " << point.second << std::endl;
+}
+```
+yields
+```
+2.0944, 29.96
+2.08567, 29.96
+2.07694, 29.96
+2.06821, 29.96
+2.05949, 29.96
+```
+
+---
+
+## How I lost my reputation
+
+```c++
+auto segmentsReversedViaNestedTransform = segments
+    | transform([](auto s) { 
+        return s | transform(polarToCartesian) | reverse; });
+
+for (auto const& point : *begin(segmentsReversedViaNestedTransform)) {
+    std::cerr << point.first << ", " << point.second << std::endl;
+}
+```
+yields
+```
+2.0944, 29.96
+2.08567, 29.96
+2.07694, 29.96
+2.06821, 29.96
+0, 29.96   <------ HERE IS SOMETHING WRONG         
+```
+
+---
+
+## How I lost my reputation
+
+```c++
+std::vector<std::vector<PolarCoordinate>> segments; 
+auto segmentsInCartesianCoordinates = segments
+  | transform([](auto s) { 
+      return s | transform(polarToCartesian) | reverse; 
+    });
+```
+
+Explanation by [@gnzlbg](https://github.com/gnzlbg): 
+
+> `[](auto s) { return s | reverse; }` creates a dangling view. 
+> The inner vector will be copied into the `s` argument (the lambda stack frame), 
+> and `| reverse` creates a view (that is, a pair of pointers) into this local vector. 
+> The problem is that this vector will be destroyed on scope exit (freeing the memory), 
+> so when the view is returned its pair of pointers into the vector will point 
+> into freed memory.
+> 
+> When you try to iterate the view, you are basically dereferencing these pointers, 
+> and that is undefined behavior: read after free.
+
+---
+
+## How I lost my reputation
+
+```c++
+std::vector<std::vector<PolarCoordinate>> segments; 
+auto segmentsInCartesianCoordinates = segments
+  | transform([](auto`&&` s) { 
+      return s | transform(polarToCartesian) | reverse; 
+    });
+```
+
+---
+
+# Dangling References due to Views
+
+```c++
+auto doub = [](int i) -> int { return 2 * i; };
+
+int main() {
+  auto e = find_if( view::ints(1) | view::transform(doub), is_six );
+  cout << "find-six: " << *e.get_unsafe() << endl;
+}
+```
+
+Prefer this version:
+
+```c++
+auto doub = [](int i) -> int { return 2 * i; };
+
+int main() {
+  auto candidates = view::ints(1) | view::transform(doub);
+  auto e = find_if( candidates, is_six );
+  cout << "find-six: " << *e << endl;
+}
+
+---
+
+# yield_if
+
+```c++
+auto filtered = rng | view::for_each(
+    [](auto &&x){ return yield_if(pred(x), x);});
+```
+
+---
+
+# yield_if
+
+```c++
+using ranges::view::ints;
+using ranges::view::take;
+using ranges::view::for_each;
+
+auto numbers = ints(1, 10);
+auto evenNumbers = numbers | for_each([](int i)
+    {
+        return yield_if((i % 2) == 0, i);
+    });
+```
+alternatives (no consolidation of interface yet)
+```c++
+auto numbers = iota(1) | take(10);
+auto evenNumbers = for_each(numbers, [](int i) { /* ... */ });
+```
+
+
+
+---
+
+# to_vector
+
+```c++
+using ranges::views::transform;
+using ranges::action::sort;
+
+auto vec = ints 
+    | transform([](int i){return i*i;}) 
+    | take(10)
+    | `to_vector` 
+    | sort(std::greater<int>{}); // same effect as | reverse
+```
+
+---
+
+# Some More Tips and Tricks
+
+Extract the values from a dictionary
+
+```c++
+std::map<int, std::wstring> ss = 
+    { {1,L"1"}, 
+      {2,L"2"}, 
+      {3,L"3"} };
+auto rng = ss | ranges::view::reverse | ranges::view::values;
+```
+
+---
+
+# Some More Tips and Tricks
+
+Compare ranges (see this code live on [Wandbox](https://wandbox.org/permlink/drelV5N7D53atok6)): 
+
+```c++
+int main() {
+    ranges::view::iota;
+    ranges::view::reverse;
+
+    std::vector<int> vec{5,4,3,2,1,0};
+    assert(`ranges::equal`(
+        vec, 
+        ints(0, 6) | reverse));
+}
+```
+
+---
+
+class: middle
+template: inverse
+
+.center[
+
+# Thank You for Your Attention 
+
+.accent[
+### (and welcome to modern C++) 
+]
+
+]
+
+---
+
+# Gimme that Old Time Religion (2)
+
+.split-70[
+.column[
+
+Scott Meyer's perfect version of a map search and update 
+```c++
+typename MapType::iterator lb =			
+    m.lower_bound(k);					
+
+if (lb != m.end() &&						
+    !(m.key_comp()(k, lb->first))) {	
+    lb->second = v;							
+    return lb;								
+}										
+else {
+    typedef typename MapType::value_type MVT;
+    return m.insert(lb, MVT(k, v));
+}									
+```
+]
+.column[
+
+![](images/EffectiveSTLCover.jpeg) 
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+
+]
+] 
+
+
+
+
+    </textarea>
+<!--script src="https://gnab.github.io/remark/downloads/remark-latest.min.js" type="text/javascript" >
+    </script-->
+<script src="./remark-latest.min.js" type="text/javascript">
+</script>
+<script src="./CustomElements.min.js" type="text/javascript">
+</script>
+<script src="./element.js" type="text/javascript">
+</script>
+<script>
+    var Module = {
+        noInitialRun: false
+    };
+    var printTo = function(output) {
+        return function(text) {
+            if (output) {
+                text = text.replace(/&/g, "&amp;");
+                text = text.replace(/</g, "&lt;");
+                text = text.replace(/>/g, "&gt;");
+                text = text.replace('\n', '<br>', 'g');
+                output.innerHTML += text + "<br>";
+            }
+        };
+    };
+</script>
+<script src="./mermaid.js"></script>
+<!--script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&delayStartupUntil=configured" type="text/javascript" >
+    </script-->
+<script src="./MathJax/MathJax.js?config=TeX-AMS-MML_HTMLorMML&delayStartupUntil=configured" type="text/javascript">
+</script>
+<script src="asciinema-player.js"></script>
+<script>
+    var slideshow = remark.create({
+        ratio: "16:9",
+        highlightLanguage: "cpp",
+        highlightStyle: "tomorrow",
+        highlightSpans: true
+    });
+
+    mermaid.initialize({
+        mermaid: {
+            startOnLoad: false,
+            cloneCssStyles: false
+        }
+    });
+
+    function initMermaid(slide) {
+        try {
+            mermaid.init(undefined, '.remark-visible .mermaid p');
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    initMermaid(slideshow.getSlides()[slideshow.getCurrentSlideIndex()]);
+
+    MathJax.Hub.Config({
+        displayAlign: "left",
+        tex2jax: {
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+            inlineMath: [
+                ['$', '$'],
+                ['\\(', '\\)']
+            ]
+        }
+    });
+    MathJax.Hub.Configured();
+    // mathjax examples 
+
+    // `$$ x = (-b +- sqrt(b^2-4ac))/(2a) . $$`
+
+    // `$$ \int_{V_1}^{V_2}mVdV =  \int_{s_1}^{s_2} F_s ds $$`
+
+    // `$$
+    // A \xrightarrow{send} B
+    // $$`
+
+    // `$$
+    // \newcommand{\ra}[1]{\!\!\!\!\!\!\!\!\!\!\!\!\xrightarrow{\quad#1\quad}\!\!\!\!\!\!\!\!}
+    // \newcommand{\da}[1]{\left\downarrow{\scriptstyle#1}\vphantom{\displaystyle\int_0^1}\right.}
+    // %
+    // \begin{array}{llllllllllll}
+    // 0 & \ra{f_1} & A & \ra{f_2} & B & \ra{f_3} & C & \ra{f_4} & D & \ra{f_5} & 0 \\
+    // \da{g_1} & & \da{g_2} & & \da{g_3} & & \da{g_4} & & \da{g_5} & & \da{g_6} \\
+    // 0 & \ra{h_1} & 0 & \ra{h_2} & E & \ra{h_3} & F & \ra{h_4} & 0 & \ra{h_5} & 0 \\
+    // \end{array}
+    // $$`
+
+    var modules = {};
+
+    // function resizeIFrameToFitContent( iFrame ) {
+
+    //     iFrame.width  = iFrame.contentWindow.document.body.scrollWidth;
+    //     iFrame.height = iFrame.contentWindow.document.body.scrollHeight;
+    // }
+
+    slideshow.on("showSlide", function(slide) {
+        // var iframes = document.querySelectorAll("iframe");
+        // for( var i = 0; i < iframes.length; i++) {
+        //      resizeIFrameToFitContent( iframes[i] );
+        // }
+
+        if (!!slide.properties.function) {
+            var m = (slide.properties.module || "").split('>');
+            var f = slide.properties.function.split('>');
+            var r = (slide.properties.return || "").split('>');
+            var t = (slide.properties.types || "").split('>');
+            var a = (slide.properties.arguments || "").split('>');
+            var o = slide.properties.output.split('>');
+            f.map((func, i) => {
+                var output = document.getElementById(o[i]);
+                if (output) output.innerHTML = ''; // clear contents
+                var module = modules[m[i]];
+                module["print"] = printTo(output);
+                module.ccall(
+                        func, // C function
+                        (r[i] || "") == "" ? null : r[i], // return type
+                        t[i].split(','), // argument types
+                        a[i].split(',')) // arguments
+            });
+        }
+    });
+    slideshow.on("afterShowSlide", function(slide) {
+        initMermaid(slide);
+    });
+    slideshow.on("print", function(slide) {
+        initMermaid(slide);
+    });
+    slideshow.on("hideSlide", function(slide) {
+        Object.keys(modules).map(k => modules[k].ccall('reset', null, [], []));
+    });
+</script>
+
+
+</body>
+
+</html>
