@@ -370,7 +370,7 @@
 
 layout: true
 <div class="footer"><div class="flexcontainer"><span>.body[[https://pem-aachen.de](http://pem-aachen.de)]</span>
-<span>.center[C++ User Group Aachen 2018]</span><span>.body[&copy; 2017 Markus Werle ([github](http://github.com/daixtrose) [linkedin](https://www.linkedin.com/in/markus-werle-04305a12a/))]</span></div></div>
+<span>.center[C++ User Group Aachen 2018]</span><span>.body[&copy; 2018 Markus Werle ([github](http://github.com/daixtrose) [linkedin](https://www.linkedin.com/in/markus-werle-04305a12a/))]</span></div></div>
 
 ---
 
@@ -395,68 +395,195 @@ template: inverse
 
 layout: false
 
+# Our Starting Point: STL 
 
-# Gimme that Old Time Religion 
-
-.split-70[
+.split-60[
 .column[
+- STL is the recommended **C++** way to deal with sets and operations on sets
+    - Provides Containers
+    - Provides Algorithms
+    - Provides Utilities
+- STL is generic
+- STL makes no compromise: performance first  
+- STl requires educated users 
 
-```c++
-std::vector<int> v; 
-v.push_back(1); v.push_back(2); 
-v.push_back(3); v.push_back(4);  
-
-for (std::vector<int>::const_iterator it = 
-        v.begin(); 
-        it != v.end(); ++it) {
-    int value =  *it;
-    // do something with the value
-```
-or 
-```c++
-std::transform (foo.begin(), foo.end(), 
-    bar.begin(), 
-    multiplyByTwo); // defined as std::function 
-```
+> Hint: I am a great fan of the STL and encourage(d) its usage wherever possible.
 ]
 .column[
-
 ![](images/EffectiveSTLCover.jpeg) 
-&nbsp;<br>
-&nbsp;<br>
-&nbsp;<br>
-&nbsp;<br>
-&nbsp;<br>
-&nbsp;<br>
-&nbsp;<br>
+]
+] 
 
+
+
+---
+
+# STL: The Crisis
+
+Andrei Alexandrescu: ["Iterators Must Go" (2009)](https://accu.org/content/conf2009/AndreiAlexandrescu_iterators-must-go.pdf), 
+Video [here](https://archive.org/details/AndreiAlexandrescuKeynoteBoostcon2009)
+
+## TL;DR
+
+- Rigorous fundamental, academic, generic approach, but 
+  - leads to counter-intuitive rules in some places
+  - is hard to learn (and hard to remember) 
+- Working with data streams is a mess.  
+- Algorithms are NOT **composable**.
+- Iterators 
+  - are so complex, one needs 10 years of education and/or 
+  - library help like [Boost.Iterator](https://www.boost.org/doc/libs/1_67_0/libs/iterator/doc/index.html) in order to get things right.
+
+
+---
+
+# Ranges 
+
+- Many attempts/proposals, e.g.
+  - [Boost.Range](https://www.boost.org/doc/libs/1_67_0/libs/range/doc/html/index.html) Version 1 and 2
+  - Eric Niebler: 3 (!) attempts
+- Rest of the talk deliberately ignores all other attempts, 
+  - shows application of Eric Niebler's [ranges-v3](https://github.com/ericniebler/range-v3) for C++11/14/17
+  - Hint: if Eric takes more than 3 attempts, you probably should believe the topic is complex.
+
+.split-50[
+.column[
+### October 2014
+![](images/NieblerTweet1.png) 
+]
+.column[
+### December 2017
+![](images/NieblerTweet2.png) 
 ]
 ] 
 
 ---
 
-# Gimme that Old Time Religion (C++ 14 version 1)
+# What are Ranges?
 
-.split-70[
+> C++ Ranges are C#'s **LINQ** for C++  
+
+- C# is a language I deeply hate for 
+  - its unnecessary limitations due to bad language design and 
+  - its limited expressiveness, but 
+
+.split-50[
 .column[
+### C# got some things right
+- Lambdas
+- Concurrency (in the 4th attempt or so, see Steven Toub's [Concurrency in C# Cookbook](https://www.amazon.com/Concurrency-Cookbook-Asynchronous-Multithreaded-Programming/dp/1449367569))
+- LINQ (`*this` talk)  
+- Reactive Extensions (`*this->next()` talk)  
+]
+.column[
+### C++ gotta catch up
+- C++17's lambdas are better, near perfect .image-fixed-20[![](images/apply-1293741_960_720.png)]
+- Concurrency will evolve<br>(I see a bright `<future>` here) 
+- Ranges converge soon into ISO C++ .image-fixed-20[![](images/apply-1293741_960_720.png)]
+- RxCpp will take some more years
+]
+]
+
+---
+
+# What are Ranges?
+
+> C++ Ranges are Pure Monadic Goodness - [Bartosz Milewski](https://bartoszmilewski.com/2014/10/17/c-ranges-are-pure-monadic-goodness/)
+
+- **Functional Programming** concepts kind of reoccur inside the design of ranges
+- Wikipedia: A **monad** is a design pattern that defines how functions, actions, inputs, and outputs can be used together to build generic types, with the following organization:
+  - Define a data type, and how values of that data type are combined.
+  - Create **functions** that use the data type, and **compose** them together into actions, following the rules defined in the first step.
+- Milewski: A **monad** is an applicative functor with an additional ability, which can be expressed either as a way of flattening a doubly encapsulated object, or as a way of applying a functor factory to an encapsulated object.
+- Simply said, it's all about  
+  - functions (operations on values or sets of values)
+  - composition of functions
+  - programming without side effects (helps a lot when dealing with concurrency)
+
+---
+
+# STL: Evolution
+
+> Ranges are another, very important contribution to making C++ easier to write and reason about
+
+.split-50[
+.column[
+### C++ 19XX
 
 ```c++
-std::vector<int> v{1, 2, 3, 4};  
+std::vector<int> v; 
+v.push_back(1); v.push_back(2);  
 
-for (auto it = std::begin(v);
-        it != std::end(v); ++it) {
-        int value =  *it;
-        // do something with the value
+for (std::vector<int>::
+        const_iterator it = 
+        v.begin(); 
+        it != v.end(); ++it) {
+    int value =  *it;
+    // do something with the value
 }
-```
-
-```c++
-std::transform (std::begin(foo), std::end(foo), 
-    std::begin(bar),  
-    (auto v) { return 2 * v; });
 ```
 ]
 .column[
+### C++ 2017
+```c++
+std::vector<int> v{1, 2, 3, 4};  
+
+
+    
+
+for (auto const & value : v) 
+    // do something with the value
+}
+```
+]
+]
+
+---
+
+# STL to Ranges: a Transformation (sic!)   
+
+
+
+.split-50[
+.column[
+
+### STL Approach
+
+```c++
+typedef /* ... ? ... */ result_t;
+
+std::vector<result_t> bar;
+
+std::transform (
+    std::begin(foo), 
+    std::end(foo), 
+    std::back_inserter(bar),  
+    [](auto const v) { 
+        return 2 * v; 
+    });
+```
+]
+.column[
+### Ranges Approach
+
+```c++
+
+
+
+
+
+auto bar = foo 
+    | view::transform(
+        [](auto const v) { 
+            return 2 * v; 
+        });
+```
+]
+] 
+
+
+
+---
 
 STL code tends to look like this after a while:
 
@@ -470,8 +597,6 @@ STL code tends to look like this after a while:
 &nbsp;<br>
 &nbsp;<br>
 
-]
-] 
 
 ---
 
@@ -497,10 +622,9 @@ std::transform (std::begin(foo), std::end(foo),
 
 ---
 
-# A Crisis
 
-Andrei Alexandrescu: ["Iterators Must Go" (2009)](https://accu.org/content/conf2009/AndreiAlexandrescu_iterators-must-go.pdf), 
-Video [here](https://archive.org/details/AndreiAlexandrescuKeynoteBoostcon2009)
+
+
 
 # Eric Niebler's Range-v3
 
