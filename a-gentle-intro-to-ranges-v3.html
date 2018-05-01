@@ -384,7 +384,7 @@ template: inverse
 
 
 .accent[
-### Say Goodbye to STL as You (Probably Don't) Know It
+### Say Goodbye to STL the Way You (Probably Don't) Know It
 ]
 
 
@@ -423,7 +423,7 @@ layout: false
 Andrei Alexandrescu: ["Iterators Must Go" (2009)](https://accu.org/content/conf2009/AndreiAlexandrescu_iterators-must-go.pdf), 
 Video [here](https://archive.org/details/AndreiAlexandrescuKeynoteBoostcon2009)
 
-## TL;DR
+## TL;DR:
 
 - Rigorous fundamental, academic, generic approach, but 
   - leads to counter-intuitive rules in some places
@@ -441,10 +441,24 @@ Video [here](https://archive.org/details/AndreiAlexandrescuKeynoteBoostcon2009)
 
 - Many attempts/proposals, e.g.
   - [Boost.Range](https://www.boost.org/doc/libs/1_67_0/libs/range/doc/html/index.html) Version 1 and 2
-  - Eric Niebler: 3 (!) attempts
+  - Eric Niebler: 3 (!) versions
 - Rest of the talk deliberately ignores all other attempts, 
   - shows application of Eric Niebler's [ranges-v3](https://github.com/ericniebler/range-v3) for C++11/14/17
-  - Hint: if Eric takes more than 3 attempts, you probably should believe the topic is complex.
+
+
+
+---
+
+# Eric Niebler's Range-v3
+
+- GitHub Repository at https://github.com/ericniebler/range-v3
+- ISO Standard Proposal 
+  - https://ericniebler.github.io/std/wg21/D4128.html
+  - TS: https://www.iso.org/obp/ui/#iso:std:iso-iec:ts:21425:ed-1:v1:en
+  - http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4651.pdf 
+- Explanations about iterators and why we need a sentinel   
+  - http://ericniebler.com/2015/02/03/iterators-plus-plus-part-1/
+
 
 .split-50[
 .column[
@@ -461,24 +475,24 @@ Video [here](https://archive.org/details/AndreiAlexandrescuKeynoteBoostcon2009)
 
 # What are Ranges?
 
-> C++ Ranges are C#'s **LINQ** for C++  
+> C++ Ranges are `C#`'s **LINQ** for C++  
 
-- C# is a language I deeply hate for 
-  - its unnecessary limitations due to bad language design and 
-  - its limited expressiveness, but 
+`C#` is a language I deeply hate for its unnecessary limitations due to bad language design and 
+its limited expressiveness, but 
 
 .split-50[
 .column[
 ### C# got some things right
 - Lambdas
-- Concurrency (in the 4th attempt or so, see Steven Toub's [Concurrency in C# Cookbook](https://www.amazon.com/Concurrency-Cookbook-Asynchronous-Multithreaded-Programming/dp/1449367569))
+- Concurrency esp. `async/await` 
+(see Steven Toub's [Concurrency in C# Cookbook](https://www.amazon.com/Concurrency-Cookbook-Asynchronous-Multithreaded-Programming/dp/1449367569))<br><br>
 - LINQ (`*this` talk)  
 - Reactive Extensions (`*this->next()` talk)  
 ]
 .column[
 ### C++ gotta catch up
-- C++17's lambdas are better, near perfect .image-fixed-20[![](images/apply-1293741_960_720.png)]
-- Concurrency will evolve<br>(I see a bright `<future>` here) 
+- C++17's **generic** lambdas .image-fixed-20[![](images/apply-1293741_960_720.png)]
+- `std::async` flawed, but concurrency will evolve (I see a bright `<future>` here, with `coroutines` and more confusion) 
 - Ranges converge soon into ISO C++ .image-fixed-20[![](images/apply-1293741_960_720.png)]
 - RxCpp will take some more years
 ]
@@ -490,7 +504,7 @@ Video [here](https://archive.org/details/AndreiAlexandrescuKeynoteBoostcon2009)
 
 > C++ Ranges are Pure Monadic Goodness - [Bartosz Milewski](https://bartoszmilewski.com/2014/10/17/c-ranges-are-pure-monadic-goodness/)
 
-- **Functional Programming** concepts kind of reoccur inside the design of ranges
+- **Functional Programming** curiously recurring all the time
 - Wikipedia: A **monad** is a design pattern that defines how functions, actions, inputs, and outputs can be used together to build generic types, with the following organization:
   - Define a data type, and how values of that data type are combined.
   - Create **functions** that use the data type, and **compose** them together into actions, following the rules defined in the first step.
@@ -502,9 +516,9 @@ Video [here](https://archive.org/details/AndreiAlexandrescuKeynoteBoostcon2009)
 
 ---
 
-# STL: Evolution
+# What are Ranges?
 
-> Ranges are another, very important contribution to making C++ easier to write and reason about
+> Ranges are a contribution to making C++ easier to write and reason about, like C++17 itself
 
 .split-50[
 .column[
@@ -540,13 +554,10 @@ for (auto const & value : v)
 
 ---
 
-# STL to Ranges: a Transformation (sic!)   
-
-
+# STL vs. Ranges: Transform (LINQ: Select, J*: Map)   
 
 .split-50[
 .column[
-
 ### STL Approach
 
 ```c++
@@ -555,9 +566,9 @@ typedef /* ... ? ... */ result_t;
 std::vector<result_t> bar;
 
 std::transform (
-    std::begin(foo), 
-    std::end(foo), 
-    std::back_inserter(bar),  
+    `std::begin(foo)`, 
+    `std::end(foo)`, 
+    `std::back_inserter(bar)`,  
     [](auto const v) { 
         return 2 * v; 
     });
@@ -568,12 +579,14 @@ std::transform (
 
 ```c++
 
+// bar is `lazy` and `composable` 
+auto bar = 
+
+
+    foo `|` view::transform(
 
 
 
-
-auto bar = foo 
-    | view::transform(
         [](auto const v) { 
             return 2 * v; 
         });
@@ -581,127 +594,142 @@ auto bar = foo
 ]
 ] 
 
-
-
 ---
 
-STL code tends to look like this after a while:
-
-![](images/matrix_effect_by_legendaryghost.png)
-(http://fav.me/d1m07e3)
-&nbsp;<br>
-&nbsp;<br>
-&nbsp;<br>
-&nbsp;<br>
-&nbsp;<br>
-&nbsp;<br>
-&nbsp;<br>
-
-
----
-
-# Gimme that Old Time Religion (C++ 14 version 2)
+# STL vs. Ranges: Composition    
 
 ```c++
-std::vector<int> v{1, 2, 3, 4};  
-
-// The new for-loop works for complete ranges in specific situations
-// and should be used where appropriate    
-for (auto value : v) 
-    // do something with the value
-}
+auto timesTwo = [](auto const v) { return 2 * v; });
+auto plusTen = [](auto const v) { return v + 10.0; });
 ```
 
-```c++
-std::transform (std::begin(foo), std::end(foo), 
-    std::begin(bar),  
-    (auto v) { return 2 * v; });
-```
-
-
-
----
-
-
-
-
-
-# Eric Niebler's Range-v3
-
-- GitHub Repository at https://github.com/ericniebler/range-v3
-- ISO Standard Proposal 
-  - https://ericniebler.github.io/std/wg21/D4128.html
-  - TS: https://www.iso.org/obp/ui/#iso:std:iso-iec:ts:21425:ed-1:v1:en
-  - http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4651.pdf 
-- Explanations about iterators and why we need a sentinel   
-  - http://ericniebler.com/2015/02/03/iterators-plus-plus-part-1/
-
-
-```cplusplus
-#include <range/v3/all.hpp>
-```
-
----
-
-# Eric Niebler's Range-v3
 
 .split-50[
-.column[
-## October 2014
-![](images/NieblerTweet1.png) 
+.column[    
+### STL Approach
+
+```c++
+auto composition = [](auto v) { 
+    return plusTen(timesTwo(v)); 
+});
+
+std::transform (
+    std::begin(foo), 
+    std::end(foo), 
+    std::back_inserter(bar),  
+    composition);
+```
 ]
 .column[
-## December 2017
-![](images/NieblerTweet2.png) 
+### Ranges Approach 
+
+```c++
+// Remember: `lazy`, 
+// i.e. optimizer looks through 
+auto bar = 
+    foo 
+    | view::transform(timesTwo)
+    | view::transform(plusTen)
+    ;
+```
 ]
 ] 
 
+---
+
+# STL vs. Ranges: Composition    
+
+```c++
+auto timesTwo = [](auto const v) { return 2 * v; });
+auto plusTen = [](auto const v) { return v + 10.0; });
+```
+
+
+.split-50[
+.column[    
+### STL Approach
+
+```c++
+auto composition = [](auto v) { 
+    return plusTen(timesTwo(v)); 
+});
+
+std::transform (
+    std::begin(foo), 
+    std::end(foo), 
+    std::back_inserter(bar),  
+    composition);
+```
+]
+.column[
+### Ranges Approach (Composition to the Max)
+
+```c++
+// Remember: `lazy`, 
+// i.e. optimizer looks through 
+auto bar = 
+    foo | view::transform(timesTwo);
+    
+auto baz = 
+    bar | view::transform(plusTen);
+```
+]
+] 
 
 ---
 
-## Get Rid of Begin/End
+# Switching back to STL 
+
+.split-50[
+.column[ 
+### Explicit 
 
 ```c++
-std::vector<int> v{1, 2, 3, 4};  
+auto bar = 
+    foo | view::transform(timesTwo)
+    `| to_vector`
+    ;
 ```
-
-### STL Solution
-```c++
-std::copy(std::begin(v), std::end(v), 
-    std::ostream_iterator<int>(std::cout, ' '));
-```
-
-### Ranges-v3
 
 ```c++
-ranges::copy(v, 
-    ranges::ostream_iterator<int>(std::cout, ' '));  
+auto bar = 
+    /* ... * / 
+    | `to_`<std::list>();
 ```
+
+```c++
+auto bar = 
+    /* ... * / 
+    | to_<std::vector<`long`>>();
+```
+]
+.column[
+### Implicit 
+```c++
+std::vector<result_t> bar = 
+    foo | view::transform(timesTwo)
+    ;    
+```
+
+```c++
+
+std::list<result_t> bar = 
+    /* ... * / 
+    ;
+```
+
+```c++
+std::vector<long> bar = 
+    /* ... * / 
+    ;
+```
+]]
 
 ---
 
-## Clear, Concise Code that is Easy to Reason About
+# Switching back to STL with Optimal Runtime Performance 
 
-### STL Solution
-
-```c++
-auto complexFun = [](auto v) { /* ... */ return result; };
-std::transform(std::begin(a), std::end(a), std::begin(b), complexFun);
-```
-
-### Ranges-v3
-
-This is [Casey's Solution](https://stackoverflow.com/questions/47831026/replacing-data-with-range-v3):
-
-```c++
-auto b = a | ranges::view::transform(complexFun) | ranges::to_vector;
-```
-
----
-
-## Clear, Concise Code that is Easy to Reason About
-
-This is [Casey's Solution](https://stackoverflow.com/questions/47831026/replacing-data-with-range-v3):
+Citation from [Casey Carter's Answer on Stack Overflow](https://stackoverflow.com/questions/47831026/replacing-data-with-range-v3):
 
 ```c++
 auto b = a | ranges::view::transform(complexFun) | ranges::to_vector;
@@ -711,11 +739,48 @@ If you already have a destination vector whose capacity you want to reuse:
 
 ```c++
 b.clear(); // Assuming b already contains junk
-b |= ranges::action::push_back(a | ranges::view::transform(complexFun));
+b `|=` ranges::action::push_back(a | ranges::view::transform(complexFun));
 ``` 
+
+
 
 > In both cases, `range-v3` is smart enough to reserve capacity in the destination vector for 
 > `ranges::size(a | ranges::view::transform(complexFun))` elements to avoid copies due to reallocation.
+
+---
+
+# Dual Interface: Chainable Pipe Operator vs. Regular Function Call
+
+For most algorithms there exist two `ranges-v3` interfaces:
+
+.split-50[
+.column[
+```c++
+auto bar = foo 
+    `|` view::transform(fn);
+```
+]
+.column[
+```c++
+auto bar = 
+    transform(foo, fn);
+```
+]]
+
+&nbsp;<br>
+Some algorithms are not available in the pipe (`|`) form:
+
+```c++
+// std::copy(std::begin(v), std::end(v), 
+//     std::ostream_iterator<int>(std::cout, ' '));
+ranges::copy(v, ranges::ostream_iterator<int>(std::cout, ' ')); 
+// or (assuming using namespace ranges;) 
+std::cout << view::transform(vs, view::all) << std::endl;
+// or TODO: testen!
+std::cout << vs | view::transform(view::all) << std::endl;
+```
+
+
 
 
 ---
