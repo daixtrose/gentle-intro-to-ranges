@@ -7,7 +7,7 @@ set(PATCH_VERSION 0)
 
 ################################################################################
 # C++ standard settings
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
@@ -18,8 +18,11 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 # ...
 
 ################################################################################
-# Add library from subfolder
-# add_subdirectory(libs/arithmetics)
+# Add range-v3 library from subfolder
+# set (RANGE_V3_NO_TESTING on)
+# set (RANGE_V3_NO_EXAMPLE on)
+# set (RANGE_V3_NO_PERF on)
+# add_subdirectory(libs/range-v3)
 
 ################################################################################
 # Add Executable

@@ -11,7 +11,7 @@ include(CTest)
 
 include(../cmake-helper/DownloadProject/DownloadProject.cmake)
 download_project(PROJ               catch
-                 GIT_REPOSITORY      https://github.com/philsquared/Catch
+                 GIT_REPOSITORY      https://github.com/catchorg/Catch2
                  GIT_TAG             master
                  UPDATE_DISCONNECTED 1
 )
@@ -24,11 +24,12 @@ include_directories(${CATCH_INCLUDE_DIR})
 # Define Unit Tests  
 ################################################################################
 
-include_directories(../libs/arithmetics/include)
+include_directories(../libs/range-v3/include)
 
 add_executable(some_unit_test_using_catch 
     test_main.cpp
     transform.cpp
+    composition.cpp
     conversion_to_stl.cpp
     dual_interface.cpp
     group_by.cpp)
