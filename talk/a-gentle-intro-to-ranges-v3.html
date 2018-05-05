@@ -781,7 +781,78 @@ std::cout << vs | view::transform(view::all) << std::endl;
 ```
 
 
+---
 
+# Group_By (LINQ: GroupBy) and Join (LINQ: SelectMany)
+
+```c++
+struct Person {
+    std::string firstname;
+    std::string surname;
+    int year;
+};
+
+std::ostream & operator<<(std::ostream & os, Person const & person) {
+    os << person.surname << ", " << person.firstname 
+       << " was born in " << person.year; 
+    return os;
+}
+
+std::vector<Person> people{
+    { "Markus", "Werle", 1968 }, { "Melania", "Trump", 1970 },
+    { "Donald", "Trump", 1946 }, { "Ivana", "Trump", 1949 },
+};
+```
+
+---
+
+# Group_By (LINQ: GroupBy) 
+
+```c++
+auto surname_is_equal = [](auto const & p1, auto const & p2) 
+    { return p1.surname == p2.surname; };
+            
+auto groups = people | ranges::view::`group_by`(surname_is_equal);
+
+for (auto const & group : groups) { 
+    std::cout << "-------\n";
+    copy(group, ostream_iterator<Person>(std::cout, "\n")); 
+}
+```
+
+```
+-------
+Werle, Markus was born in 1968
+-------
+Trump, Melania was born in 1970
+Trump, Donald was born in 1946
+Trump, Ivana was born in 1949
+```
+
+---
+
+# Group_By (LINQ: GroupBy) and Join (LINQ: SelectMany)
+
+```c++
+auto is_younger = [](auto const & p1, auto const & p2) 
+    { return p2.year < p1.year; };
+
+auto each_group_sorted_by_age = groups 
+    | transform([`=`](auto g) { 
+        `sort`(g, is_younger); // range-v3/issues/266: no view::sorted 
+        return /* expensive copy of */ g; });     
+
+copy(`join`(each_group_sorted_by_age), 
+    ostream_iterator<Person>(std::cout, "\n"));
+```
+
+```
+--> sorted by age, then joined:
+Werle, Markus was born in 1968
+Trump, Melania was born in 1970
+Trump, Ivana was born in 1949
+Trump, Donald was born in 1946
+```
 
 ---
 
