@@ -892,8 +892,22 @@ auto is_odd = [](int i) { return i % 2 != 0; };
 auto odd_numbers = numbers | `filter`(is_odd);
 auto odd_numbers_alt = numbers | `remove_if`(`not_fn`(is_odd));
 auto even_numbers = numbers | `remove_if`(is_odd);
-
 ```
+
+---
+
+# Set Operations
+
+Distinct	Removes duplicate values from a collection.	
+
+
+Except	Returns the set difference, which means the elements of one collection that do not appear in a second collection.	Not applicable.	Enumerable.Except
+
+
+Intersect	Returns the set intersection, which means elements that appear in each of two collections.	Not applicable.	Enumerable.Intersect
+
+
+Union Returns the set union, which means unique elements that appear in either of two collections.
 
 ---
 
