@@ -799,7 +799,7 @@ std::ostream & operator<<(std::ostream & os, Person const & person) {
 }
 
 std::vector<Person> people{
-    { "Markus", "Werle", 1968 }, { "Melania", "Trump", 1970 },
+    { "Jared", "Kushner", 1981 }, { "Melania", "Trump", 1970 },
     { "Donald", "Trump", 1946 }, { "Ivana", "Trump", 1949 },
 };
 ```
@@ -822,7 +822,7 @@ for (auto const & group : groups) {
 
 ```
 -------
-Werle, Markus was born in 1968
+Kushner, Jared was born in 1981
 -------
 Trump, Melania was born in 1970
 Trump, Donald was born in 1946
@@ -831,7 +831,7 @@ Trump, Ivana was born in 1949
 
 ---
 
-# Group_By (LINQ: GroupBy) and Join (LINQ: SelectMany)
+# Join (LINQ: SelectMany)
 
 ```c++
 auto is_younger = [](auto const & p1, auto const & p2) 
@@ -848,7 +848,7 @@ copy(`join`(each_group_sorted_by_age),
 
 ```
 --> sorted by age, then joined:
-Werle, Markus was born in 1968
+Kushner, Jared was born in 1981
 Trump, Melania was born in 1970
 Trump, Ivana was born in 1949
 Trump, Donald was born in 1946
@@ -856,20 +856,7 @@ Trump, Donald was born in 1946
 
 ---
 
-# Clear, Concise Code that is Easy to Reason About
 
-This code was posted by [Eric Niebler on Stackoverflow](https://stackoverflow.com/questions/45212965/ranges-of-ranges-to-vector-of-vectors): 
-```c++
-std::vector<int> rng {0,1,2,3,4,5,6,7,8,9};
-auto groups = ranges::view::group_by(rng, [](int i, int j){
-    return j/3 == i/3;
-});
-
-std::vector<std::vector<int>> vs = groups; // WORKS
-
-// Display the result: [[0,1,2],[3,4,5],[6,7,8],[9]]
-std::cout << ranges::view::transform(vs, ranges::view::all) << std::endl;
-```
 
 ---
 

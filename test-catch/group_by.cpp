@@ -21,7 +21,7 @@ SCENARIO("group_by and join work well together", "[set operations]")
     GIVEN("a set of people")
     {
         std::vector<Person> people{
-            { "Markus", "Werle", 1968 },
+            { "Jared", "Kushner", 1981 },
             { "Melania", "Trump", 1970 },
             { "Donald", "Trump", 1946 },
             { "Ivana", "Trump", 1949 },
