@@ -32,7 +32,9 @@ add_executable(some_unit_test_using_catch
     composition.cpp
     conversion_to_stl.cpp
     dual_interface.cpp
-    group_by.cpp)
+    group_by.cpp
+    yield_if.cpp
+    remove_if.cpp)
 
 #target_link_libraries(some_unit_test_using_catch
 #    arithmetics)
