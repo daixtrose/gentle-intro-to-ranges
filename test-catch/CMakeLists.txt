@@ -34,7 +34,9 @@ add_executable(some_unit_test_using_catch
     dual_interface.cpp
     group_by.cpp
     yield_if.cpp
-    remove_if.cpp)
+    remove_if.cpp
+    set_operations.cpp
+    dangling_references.cpp)
 
 #target_link_libraries(some_unit_test_using_catch
 #    arithmetics)

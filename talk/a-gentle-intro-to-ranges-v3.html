@@ -395,6 +395,47 @@ template: inverse
 
 layout: false
 
+# Hints 
+
+.split-50[
+.column[
+- You can download this talk **and** code samples in the form of unit tests
+  - https://github.com/daixtrose/gentle-intro-to-ranges
+- Published under MIT licence
+ - Code for talk framework based on remark.js was stolen from [Kirk Shoop's Intro to RxCpp](https://github.com/kirkshoop/introductionToRxcpp) 
+ - Please contribute fixes or [file an issue](https://github.com/daixtrose/gentle-intro-to-ranges/issues) if you find errors or know about improvements. 
+]
+.column[
+![](images/QRCodeGitRepo.png)
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+]
+]
+
+---
+
+# Disclaimer
+
+.split-50[
+.column[
+
+- This is not "The Complete Guide", but 
+  - just a gentle **introduction**
+  - a **user's view** (sic!) on ranges
+  - focus is more on getting the basic ideas (tutorial) 
+]
+.column[
+![](images/QRCodeGitRepo.png)
+]
+]
+
+  
+
+
+---
+
 # Our Starting Point: STL 
 
 .split-60[
@@ -425,7 +466,7 @@ Video [here](https://archive.org/details/AndreiAlexandrescuKeynoteBoostcon2009)
 
 ## TL;DR:
 
-- Rigorous fundamental, academic, generic approach, but 
+- STL was built using a rigorous fundamental, academic, generic approach, but 
   - leads to counter-intuitive rules in some places
   - is hard to learn (and hard to remember) 
 - Working with data streams is a mess.  
@@ -475,17 +516,53 @@ Video [here](https://archive.org/details/AndreiAlexandrescuKeynoteBoostcon2009)
 
 # What are Ranges?
 
-> C++ Ranges are `C#`'s **LINQ** for C++  
+![](images/2017-05-07_Niebler_Tweets_1.PNG)
 
-`C#` is a language I deeply hate for its unnecessary limitations due to bad language design and 
+---
+
+# What are Ranges?
+
+![](images/2017-05-07_Niebler_Tweets_2.PNG)
+
+---
+
+# What are Ranges?
+
+![](images/2017-05-07_Niebler_Tweets_3.PNG)
+
+---
+
+# What are Ranges?
+
+```text
+¯\_(ツ)_/¯    ¯\_(ツ)_/¯    ¯\_(ツ)_/¯    ¯\_(ツ)_/¯     ¯\_(ツ)_/¯
+
+¯\_(ツ)_/¯    ¯\_(ツ)_/¯    ¯\_(ツ)_/¯    ¯\_(ツ)_/¯     ¯\_(ツ)_/¯
+
+¯\_(ツ)_/¯    ¯\_(ツ)_/¯    ¯\_(ツ)_/¯    ¯\_(ツ)_/¯     ¯\_(ツ)_/¯
+
+¯\_(ツ)_/¯    ¯\_(ツ)_/¯    ¯\_(ツ)_/¯    ¯\_(ツ)_/¯     ¯\_(ツ)_/¯
+
+¯\_(ツ)_/¯    ¯\_(ツ)_/¯    ¯\_(ツ)_/¯    ¯\_(ツ)_/¯     ¯\_(ツ)_/¯
+
+
+```
+
+
+---
+
+# What are Ranges?
+
+> C++ Ranges are `C#`'s **LINQ** for C++ - Markus Werle
+
+`C#` is a language I struggled with may times because of its unnecessary limitations due to bad language design (esp. generics are multiple inheritance) and 
 its limited expressiveness, but 
-
 .split-50[
 .column[
 ### C# got some things right
 - Lambdas
 - Concurrency esp. `async/await` 
-(see Steven Toub's [Concurrency in C# Cookbook](https://www.amazon.com/Concurrency-Cookbook-Asynchronous-Multithreaded-Programming/dp/1449367569))<br><br>
+(see Steven Toub's [Concurrency in C# Cookbook](https://www.amazon.com/Concurrency-Cookbook-Asynchronous-Multithreaded-Programming/dp/1449367569)) and `CancellationToken`<br>
 - LINQ (`*this` talk)  
 - Reactive Extensions (`*this->next()` talk)  
 ]
@@ -494,7 +571,7 @@ its limited expressiveness, but
 - C++17's **generic** lambdas .image-fixed-20[![](images/apply-1293741_960_720.png)]
 - `std::async` flawed, but concurrency will evolve (I see a bright `<future>` here, with `coroutines` and more confusion) 
 - Ranges converge soon into ISO C++ .image-fixed-20[![](images/apply-1293741_960_720.png)]
-- RxCpp will take some more years
+- RxCpp will converge during the next years
 ]
 ]
 
@@ -502,15 +579,12 @@ its limited expressiveness, but
 
 # What are Ranges?
 
-> C++ Ranges are Pure Monadic Goodness - [Bartosz Milewski](https://bartoszmilewski.com/2014/10/17/c-ranges-are-pure-monadic-goodness/)
+> C++ Ranges are **Pure Monadic Goodness** - [Bartosz Milewski](https://bartoszmilewski.com/2014/10/17/c-ranges-are-pure-monadic-goodness/)
 
 - **Functional Programming** curiously recurring all the time
-- Wikipedia: A **monad** is a design pattern that defines how functions, actions, inputs, and outputs can be used together to build generic types, with the following organization:
-  - Define a data type, and how values of that data type are combined.
-  - Create **functions** that use the data type, and **compose** them together into actions, following the rules defined in the first step.
 - Milewski: A **monad** is an applicative functor with an additional ability, which can be expressed either as a way of flattening a doubly encapsulated object, or as a way of applying a functor factory to an encapsulated object.
 - Simply said, it's all about  
-  - functions (operations on values or sets of values)
+  - functions/algorithms (operations on values or sets of values)
   - composition of functions
   - programming without side effects (helps a lot when dealing with concurrency)
 
@@ -518,39 +592,9 @@ its limited expressiveness, but
 
 # What are Ranges?
 
-> Ranges are a contribution to making C++ easier to write and reason about, like C++17 itself
-
-.split-50[
-.column[
-### C++ 19XX
-
-```c++
-std::vector<int> v; 
-v.push_back(1); v.push_back(2);  
-
-for (std::vector<int>::
-        const_iterator it = 
-        v.begin(); 
-        it != v.end(); ++it) {
-    int value =  *it;
-    // do something with the value
-}
-```
-]
-.column[
-### C++ 2017
-```c++
-std::vector<int> v{1, 2, 3, 4};  
+> Ranges are a contribution to making C++ easier to write and reason about
 
 
-    
-
-for (auto const & value : v) 
-    // do something with the value
-}
-```
-]
-]
 
 ---
 
@@ -898,127 +942,127 @@ auto even_numbers = numbers | `remove_if`(is_odd);
 
 # Set Operations
 
-Distinct	Removes duplicate values from a collection.	
+## Unique (LINQ: Distinct)	
 
-
-Except	Returns the set difference, which means the elements of one collection that do not appear in a second collection.	Not applicable.	Enumerable.Except
-
-
-Intersect	Returns the set intersection, which means elements that appear in each of two collections.	Not applicable.	Enumerable.Intersect
-
-
-Union Returns the set union, which means unique elements that appear in either of two collections.
-
----
-
-# A Real World Example: LIDAR Scan Data 
-
-.split-70[
-.column[
-![](images/LIDAR_Scan.png) 
-]
-.column[
-
-]
-]
-
-### Tasks 
-
-- Perform a segmentation
-- Remove NaNs and Infs 
-- Select the most likely segment
-- Convert polar coordinates to cartesian
-- Revert the order of the values
-
-> Avoid copies!
-
-
-
-
-
-## Remove NaNs and Infs
+Removes duplicate values from a collection. In most libraries, finding duplicates requires a sorted container/enumerable.
 
 ```c++
-auto segmentation(
-    std::vector<PolarCoordinate> const& coordinates, 
-    /* ... */)
-{
-    using `ranges::action::remove_if`
-     
-    auto is_inf_or_nan = 
-        [](double d) { return std::isinf(d) || std::isnan(d); };
+std::vector<int> numbers{3, 1, 2, 3, 3, 4, 3, 5, 6};
 
-    auto distance_is_inf_or_nan = 
-        [=](PolarCoordinate const& pc) { 
-            return is_inf_or_nan(pc.distance); 
-        };
+using ranges::action::unique;
+using ranges::action::sort;
 
-    auto cleanCoordinates = // the return type is a view
-        `coordinates | remove_if(distance_is_inf_or_nan)`;    
-    
+numbers |= sort | unique;
 ```
 
 ---
 
-## Segmentation
+# Set Operations
+
+## Set Difference (LINQ: Except)	
+
+Returns the set difference, which means the elements of one collection that do not appear in a second collection.	
 
 ```c++
-std::vector<std::vector<PolarCoordinate>>
-segmentation(std::vector<PolarCoordinate> const& coordinates, /* ... */)
-{
-    using `ranges::action::split`;
+std::vector<int> v1{1, 2, 3, 4};
+std::vector<int> v2{3, 4, 5};
 
-    auto is_inf_or_nan = 
-        [](double d) { return std::isinf(d) || std::isnan(d); };
+using ranges::view::set_difference;
 
-    auto distance_is_inf_or_nan = 
-        [=](PolarCoordinate const& pc) { 
-            return is_inf_or_nan(pc.distance); };
+auto v = set_difference(v1, v2);
 
-    auto split_at_nans = `split(coordinates, distance_is_inf_or_nan)`;
-    return split_at_nans; // view converts automagically to vector!
-}
+using ranges::equal;
+REQUIRE(equal(v, std::vector<int>{1, 2}));
 ```
 
 ---
 
-## Polar to Cartesian (Good Old Religion Version)
+# Set Operations
+
+## Symmetric Set Difference  
+
+The symmetric difference finds the elements that are found in either of the ranges, but not in both of them 
 
 ```c++
-CartesianCoordinate polarToCartesian(PolarCoordinate const pc)
-{
-   // ...
-}
-// ...
-std::vector<PolarCoordinates> polarCoordinates; 
-std::vector<CartesianCoordinates> cartesianCoordinates;
-cartesianCoordinates.`reserve`(polarCoordinates.size()); 
+std::vector<int> v1{1, 2, 3, 4};
+std::vector<int> v2{3, 4, 5};
 
-std::transform(polarCoordinates.begin(), // mention once 
-               polarCoordinates.end(),   // mention twice
-               std::back_inserter(cartesianCoordinates),
-               &polarToCartesian);
+using ranges::view::set_symmetric_difference;
+
+auto v = set_symmetric_difference(v1, v2);
+
+using ranges::equal;
+REQUIRE(equal(v, std::vector<int>{1, 2, 5}));
 ```
-
 
 
 ---
 
-## Polar to Cartesian
+# Set Operations
+
+## Set Intersection (LINQ: Intersect)	
+
+Returns the set intersection, which means elements that appear in each of two collections.	
 
 ```c++
- CartesianCoordinate polarToCartesian(PolarCoordinate const pc)
- {
-     // ...
- }
+std::vector<int> v1{1, 2, 3, 4};
+std::vector<int> v2{3, 4, 5};
 
- // ...
- using ranges::view::transform;
- std::vector<PolarCoordinates> polarCoordinates; 
+using ranges::view::set_intersection;
 
- `auto` cartesianCoordinates = // this is a view, no copies! 
-    polarCoordinates `| transform(polarToCartesian)`;
+auto v = set_intersection(v1, v2);
+
+using ranges::equal;
+REQUIRE(equal(v, std::vector<int>{3, 4}));    
 ```
+
+---
+
+# Set Operations
+
+## Set Union (LINQ: Union)
+
+Returns the set union, which means unique elements that appear in either of two collections.
+
+```c++
+std::vector<int> v1{1, 2, 3, 4};
+std::vector<int> v2{3, 4, 5};
+
+using ranges::view::set_union;
+
+auto v = set_union(v1, v2);
+
+using ranges::equal;
+REQUIRE(equal(v, std::vector<int>{1, 2, 3, 4, 5}));
+```
+
+---
+
+# Partitioning 
+
+- skip
+- skip_while
+- take
+- take_while
+
+---
+
+# Generating Sequences
+
+- empty
+- range of numbers
+- repeat 
+
+---
+
+# Accessing elements
+
+- at
+- first 
+- first or default
+- last 
+- last or default 
+- single 
 
 ---
 
@@ -1058,7 +1102,8 @@ auto segmentsReversedViaNestedTransform = segments
       return s | `transform`(polarToCartesian) | `reverse`; 
     });
 
-std::vector<PolarCoordinate> firstSegmentReversed = segments[0] | `reverse`;
+std::vector<PolarCoordinate> firstSegmentReversed = 
+    segments[0] | `transform`(polarToCartesian) | `reverse`;
 
 for (auto const& point : firstSegmentReversed) {
     std::cerr << point.first << ", " << point.second << std::endl;
@@ -1075,8 +1120,9 @@ for (auto const& point : *begin(segmentsReversedViaNestedTransform)) {
 
 ```c++
 std::vector<std::vector<PolarCoordinate>> segments; 
-std::vector<PolarCoordinate> firstSegmentReversed = segments[0] | reverse;
-
+std::vector<PolarCoordinate> firstSegmentReversed = 
+        segments[0] | `transform`(polarToCartesian) | `reverse`;
+            
 for (auto const& point : firstSegmentReversed) {
     std::cerr << point.first << ", " << point.second << std::endl;
 }
@@ -1171,57 +1217,11 @@ int main() {
   auto e = find_if( candidates, is_six );
   cout << "find-six: " << *e << endl;
 }
-
----
-
-# yield_if
-
-```c++
-auto filtered = rng | view::for_each(
-    [](auto &&x){ return yield_if(pred(x), x);});
 ```
 
 ---
 
-# yield_if
-
-```c++
-using ranges::view::ints;
-using ranges::view::take;
-using ranges::view::for_each;
-
-auto numbers = ints(1, 10);
-auto evenNumbers = numbers | for_each([](int i)
-    {
-        return yield_if((i % 2) == 0, i);
-    });
-```
-alternatives (no consolidation of interface yet)
-```c++
-auto numbers = iota(1) | take(10);
-auto evenNumbers = for_each(numbers, [](int i) { /* ... */ });
-```
-
-
-
----
-
-# to_vector
-
-```c++
-using ranges::views::transform;
-using ranges::action::sort;
-
-auto vec = ints 
-    | transform([](int i){return i*i;}) 
-    | take(10)
-    | `to_vector` 
-    | sort(std::greater<int>{}); // same effect as | reverse
-```
-
----
-
-# Some More Tips and Tricks
+# Maps
 
 Extract the values from a dictionary
 
@@ -1232,6 +1232,8 @@ std::map<int, std::wstring> ss =
       {3,L"3"} };
 auto rng = ss | ranges::view::reverse | ranges::view::values;
 ```
+
+
 
 ---
 
@@ -1250,6 +1252,8 @@ int main() {
         ints(0, 6) | reverse));
 }
 ```
+
+
 
 ---
 

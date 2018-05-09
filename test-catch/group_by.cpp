@@ -59,9 +59,14 @@ SCENARIO("group_by and join work well together", "[set operations]")
 
                 auto is_younger = [](auto const & p1, auto const & p2) { return p2.year < p1.year; };
 
+                // auto each_group_sorted_by_age = groups 
+                //     | transform([=](auto g) { sort(g, is_younger); return g; });     
+
                 auto each_group_sorted_by_age = groups 
-                    | transform([=](auto g) { sort(g, is_younger); return g; });     
-                
+                    | transform([=](auto g) { 
+                        g |= ranges::action::sort(is_younger); return g; });     
+
+
     	        ranges::copy(join(each_group_sorted_by_age), ranges::ostream_iterator<Person>(std::cout, "\n"));
 
                 std::cout << "\n------------------------------------------------------------------------\n";
@@ -73,9 +78,6 @@ SCENARIO("group_by and join work well together", "[set operations]")
                 
     	        ranges::copy(eldest_in_each_group, 
                     ranges::ostream_iterator<Person>(std::cout, "\n"));
-
-                // or TODO: testen!
-                //std::cout << persons | view::transform(view::all) << std::endl;
             }
         }
     }
