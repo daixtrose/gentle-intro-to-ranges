@@ -455,6 +455,43 @@ layout: false
 ]
 ] 
 
+---
+
+# STL Requires Educated Users
+
+
+.split-70[
+.column[
+
+**Example**: Scott Meyer's perfect version of a map search and update 
+```c++
+typename MapType::iterator lb =			
+    m.lower_bound(k);					
+
+if (lb != m.end() &&						
+    !(m.key_comp()(k, lb->first))) {	
+    lb->second = v;							
+    return lb;								
+}										
+else {
+    typedef typename MapType::value_type MVT;
+    return m.insert(lb, MVT(k, v));
+}									
+```
+]
+.column[
+
+![](images/EffectiveSTLCover.jpeg) 
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+
+]
+] 
 
 
 ---
@@ -497,9 +534,9 @@ Video [here](https://archive.org/details/AndreiAlexandrescuKeynoteBoostcon2009)
   - https://ericniebler.github.io/std/wg21/D4128.html
   - TS: https://www.iso.org/obp/ui/#iso:std:iso-iec:ts:21425:ed-1:v1:en
   - http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4651.pdf 
-- Explanations about iterators and why we need a sentinel   
-  - http://ericniebler.com/2015/02/03/iterators-plus-plus-part-1/
-
+- [Explanations about iterators and why we need a sentinel](http://ericniebler.com/2015/02/03/iterators-plus-plus-part-1/)
+- [Merging the Ranges TS](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0896r1.pdf) 
+  (proposes to merge the Ranges TS into the working draft)
 
 .split-50[
 .column[
@@ -553,9 +590,10 @@ Video [here](https://archive.org/details/AndreiAlexandrescuKeynoteBoostcon2009)
 
 # What are Ranges?
 
-> C++ Ranges are `C#`'s **LINQ** for C++ - Markus Werle
+> The C++ Ranges library is C#'s **LINQ** for C++ - Markus Werle
 
-`C#` is a language I struggled with may times because of its unnecessary limitations due to bad language design (esp. generics are multiple inheritance) and 
+Ranges in C++ are what `IEnumerable<T>` is in C#. That's why they were also called Iterables.  
+C# is a language I struggled with many times because of its unnecessary limitations due to bad language design (esp. generics are multiple inheritance) and 
 its limited expressiveness, but 
 .split-50[
 .column[
@@ -1270,42 +1308,6 @@ template: inverse
 
 ]
 
----
-
-# Gimme that Old Time Religion (2)
-
-.split-70[
-.column[
-
-Scott Meyer's perfect version of a map search and update 
-```c++
-typename MapType::iterator lb =			
-    m.lower_bound(k);					
-
-if (lb != m.end() &&						
-    !(m.key_comp()(k, lb->first))) {	
-    lb->second = v;							
-    return lb;								
-}										
-else {
-    typedef typename MapType::value_type MVT;
-    return m.insert(lb, MVT(k, v));
-}									
-```
-]
-.column[
-
-![](images/EffectiveSTLCover.jpeg) 
-&nbsp;<br>
-&nbsp;<br>
-&nbsp;<br>
-&nbsp;<br>
-&nbsp;<br>
-&nbsp;<br>
-&nbsp;<br>
-
-]
-] 
 
 
 
