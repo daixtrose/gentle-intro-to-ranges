@@ -1,5 +1,6 @@
 # A Gentle Introduction to Ranges v3
 
+> This talk was given on May 17, 2018 at [CUG Aachen](http://www.wilkening-online.de/programmieren/c++-treffen-aachen.html)
 ## Disclaimer
 
 - This is not "The Complete Guide", but 
