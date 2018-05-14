@@ -14,9 +14,25 @@ TEST_CASE("distinct", "[set operations]")
 
     using ranges::equal;
 
-    ranges::copy(numbers, ranges::ostream_iterator<int>(std::cout, "\n")); 
     REQUIRE(equal(numbers, std::vector<int>{1, 2, 3, 4, 5, 6}));
 }
+
+TEST_CASE("distinct with copy", "[set operations]")
+{
+    std::vector<int> numbers{3, 1, 2, 3, 3, 4, 3, 5, 6};
+
+    using ranges::action::unique;
+    using ranges::action::sort;
+    using ranges::copy;
+
+    auto numbers_sorted_and_unique = numbers | copy | sort | unique; 
+    
+    using ranges::equal;
+
+    REQUIRE(equal(numbers_sorted_and_unique, std::vector<int>{1, 2, 3, 4, 5, 6}));
+}
+
+
 
 TEST_CASE("set_difference", "[set operations]")
 {

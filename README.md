@@ -2,7 +2,6 @@
 
 ## Disclaimer
 
-- I am not an expert
 - This is not "The Complete Guide", but 
   - just a gentle **introduction**
   - a user's view on ranges

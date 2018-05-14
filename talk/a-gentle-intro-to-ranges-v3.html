@@ -455,6 +455,43 @@ layout: false
 ]
 ] 
 
+---
+
+# STL Requires Educated Users
+
+
+.split-70[
+.column[
+
+**Example**: Scott Meyer's perfect version of a map search and update 
+```c++
+typename MapType::iterator lb =			
+    m.lower_bound(k);					
+
+if (lb != m.end() &&						
+    !(m.key_comp()(k, lb->first))) {	
+    lb->second = v;							
+    return lb;								
+}										
+else {
+    typedef typename MapType::value_type MVT;
+    return m.insert(lb, MVT(k, v));
+}									
+```
+]
+.column[
+
+![](images/EffectiveSTLCover.jpeg) 
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+
+]
+] 
 
 
 ---
@@ -497,9 +534,9 @@ Video [here](https://archive.org/details/AndreiAlexandrescuKeynoteBoostcon2009)
   - https://ericniebler.github.io/std/wg21/D4128.html
   - TS: https://www.iso.org/obp/ui/#iso:std:iso-iec:ts:21425:ed-1:v1:en
   - http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4651.pdf 
-- Explanations about iterators and why we need a sentinel   
-  - http://ericniebler.com/2015/02/03/iterators-plus-plus-part-1/
-
+- [Explanations about iterators and why we need a sentinel](http://ericniebler.com/2015/02/03/iterators-plus-plus-part-1/)
+- [Merging the Ranges TS](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0896r1.pdf) 
+  (proposes to merge the Ranges TS into the working draft)
 
 .split-50[
 .column[
@@ -553,9 +590,10 @@ Video [here](https://archive.org/details/AndreiAlexandrescuKeynoteBoostcon2009)
 
 # What are Ranges?
 
-> C++ Ranges are `C#`'s **LINQ** for C++ - Markus Werle
+> The C++ Ranges library is C#'s **LINQ** for C++ - Markus Werle
 
-`C#` is a language I struggled with may times because of its unnecessary limitations due to bad language design (esp. generics are multiple inheritance) and 
+Ranges in C++ are what `IEnumerable<T>` is in C#. That's why they were also called Iterables.  
+C# is a language I struggled with many times because of its unnecessary limitations due to bad language design (esp. generics are multiple inheritance) and 
 its limited expressiveness, but 
 .split-50[
 .column[
@@ -791,6 +829,9 @@ b `|=` ranges::action::push_back(a | ranges::view::transform(complexFun));
 > In both cases, `range-v3` is smart enough to reserve capacity in the destination vector for 
 > `ranges::size(a | ranges::view::transform(complexFun))` elements to avoid copies due to reallocation.
 
+
+
+
 ---
 
 # Dual Interface: Chainable Pipe Operator vs. Regular Function Call
@@ -818,10 +859,22 @@ Some algorithms are not available in the pipe (`|`) form:
 // std::copy(std::begin(v), std::end(v), 
 //     std::ostream_iterator<int>(std::cout, ' '));
 ranges::copy(v, ranges::ostream_iterator<int>(std::cout, ' ')); 
-// or (assuming using namespace ranges;) 
-std::cout << view::transform(vs, view::all) << std::endl;
-// or TODO: testen!
-std::cout << vs | view::transform(view::all) << std::endl;
+```
+
+---
+
+# Make a Range out of a Container
+
+```c++
+std::vector<double> v;
+auto rng = ranges::view::`all`(v);
+```
+
+This is useful e.g. for DEBUG output:
+
+```c++
+std::vector<double> v;                    
+std::cerr << ( v | ranges::view::`all` ) << std::endl; 
 ```
 
 
@@ -944,7 +997,7 @@ auto even_numbers = numbers | `remove_if`(is_odd);
 
 ## Unique (LINQ: Distinct)	
 
-Removes duplicate values from a collection. In most libraries, finding duplicates requires a sorted container/enumerable.
+Removes duplicate values from a collection. In most libraries, finding duplicates requires a sorted container/enumerable. Same here:
 
 ```c++
 std::vector<int> numbers{3, 1, 2, 3, 3, 4, 3, 5, 6};
@@ -952,8 +1005,13 @@ std::vector<int> numbers{3, 1, 2, 3, 3, 4, 3, 5, 6};
 using ranges::action::unique;
 using ranges::action::sort;
 
-numbers |= sort | unique;
+numbers |= sort | unique; 
+REQUIRE(equal(numbers, std::vector<int>{1, 2, 3, 4, 5, 6}));
+
+// Instead of in-place treatment you can always explicitly request a copy 
+auto numbers_sorted_and_unique = numbers | copy | sort | unique;  
 ```
+
 
 ---
 
@@ -1040,31 +1098,138 @@ REQUIRE(equal(v, std::vector<int>{1, 2, 3, 4, 5}));
 
 # Partitioning 
 
-- skip
-- skip_while
-- take
-- take_while
+## Skip
+
+```c++
+// 'skip' is called 'drop' here
+auto result = numbers | drop(3);
+auto result = numbers | drop_exactly(3);
+auto result = numbers | drop_while([](int i) { return i < 4; });
+```
+
+## Take
+
+```c++
+auto result = numbers | take(3);
+auto result = numbers | take_exactly(3);
+auto result = numbers | take_while([](int i) { return i < 4; });
+```
+
+
+
+
 
 ---
 
 # Generating Sequences
 
-- empty
-- range of numbers
-- repeat 
+## Empty 
+
+C# has `IEnumerable.Empty` (the neutral element of addition). AFAIK ranges-v3 does not contain such a feature. 
+
+---
+
+## A Range of Numbers
+
+Stolen from https://github.com/ericniebler/range-v3/blob/master/test/view/iota.cpp
+```c++
+::check_equal(view::ints | view::take(10), {0,1,2,3,4,5,6,7,8,9});
+::check_equal(view::ints(0) | view::take(10), {0,1,2,3,4,5,6,7,8,9});
+::check_equal(view::ints(0,9), {0,1,2,3,4,5,6,7,8});
+
+::check_equal(view::closed_indices(0,9), {0,1,2,3,4,5,6,7,8,9});
+
+auto chars = view::ints(std::numeric_limits<char>::min(),
+                        std::numeric_limits<char>::max());
+```
+
+---
+
+# Generating Sequences
+
+## Generate
+
+```c++
+using ranges::view::generate;
+using ranges::view::take;
+
+auto rng = generate([=]() {
+    // ... arbitrary calculation with side effects ... 
+    return result;
+    });
+
+auto sequence = rng | take(10);
+```
+
+---
+
+# Generating Sequences
+
+## Repeat
+
+```c++
+using ranges::view::repeat; // i.e. repeat `forever` 
+using ranges::view::take;
+
+// {9, 9, 9, 9, 9, 9, 9, 9, 9, 9}
+auto rng = view::repeat(9) | view::take(10);
+```
 
 ---
 
 # Accessing elements
 
-- at
-- first 
-- first or default
-- last 
-- last or default 
-- single 
+# At 
+
+```c++
+std::vector<int> vi{1,2,3,4};
+CHECK(ranges::index(vi, 0) == 1);
+CHECK(ranges::index(vi, 1) == 2);
+CHECK(ranges::index(vi, 2) == 3);
+CHECK(ranges::index(vi, 3) == 4);
+
+CHECK(ranges::at(vi, 0) == 1);
+CHECK(ranges::at(vi, 1) == 2);
+CHECK(ranges::at(vi, 2) == 3);
+CHECK(ranges::at(vi, 3) == 4);
+```
 
 ---
+
+# Accessing elements
+
+## First / First or Default
+
+`AFAIK n.a.` better use `*begin(rng)` 
+
+## Last / Last or Default 
+
+`AFAIK n.a.` 
+
+## Single
+
+`AFAIK n.a.`
+
+
+
+---
+
+# Maps
+
+Extract the values from a dictionary
+
+```c++
+std::map<int, std::wstring> m = 
+    { {1, L"1"}, 
+      {2, L"2"}, 
+      {3, L"3"} };
+
+auto keys = m | ranges::view::reverse | ranges::view::keys;
+auto vals = m | ranges::view::reverse | ranges::view::values;
+```
+
+---
+
 
 ```c++
 std::vector<PolarCoordinate>
@@ -1097,21 +1262,26 @@ selectNearestSegmentToAngleZero(
 
 ```c++
 std::vector<std::vector<PolarCoordinate>> segments; 
+// ---------------------------- Variant 1 ----------------------------------
+std::vector<PolarCoordinate> firstSegmentReversed = 
+    segments[0] | `transform`(polarToCartesian) | `reverse`;
+        
+for (auto const& point : firstSegmentReversed) {
+    std::cerr << point.first << ", " << point.second << std::endl;
+}
+// ---------------------------- Variant 2 ----------------------------------
 auto segmentsReversedViaNestedTransform = segments
   | `transform`([](auto s) { 
       return s | `transform`(polarToCartesian) | `reverse`; 
     });
 
-std::vector<PolarCoordinate> firstSegmentReversed = 
-    segments[0] | `transform`(polarToCartesian) | `reverse`;
+for (auto const& point : `*begin`(segmentsReversedViaNestedTransform)) {
+    std::cerr << point.first << ", " << point.second << std::endl;
+}
+    
 
-for (auto const& point : firstSegmentReversed) {
-    std::cerr << point.first << ", " << point.second << std::endl;
-}
-        
-for (auto const& point : *begin(segmentsReversedViaNestedTransform)) {
-    std::cerr << point.first << ", " << point.second << std::endl;
-}
+
+
 ```
 
 ---
@@ -1155,7 +1325,7 @@ yields
 2.08567, 29.96
 2.07694, 29.96
 2.06821, 29.96
-0, 29.96   <------ HERE IS SOMETHING WRONG         
+0, 29.96   <------ SOMETHING WRONG         
 ```
 
 ---
@@ -1164,7 +1334,7 @@ yields
 
 ```c++
 std::vector<std::vector<PolarCoordinate>> segments; 
-auto segmentsInCartesianCoordinates = segments
+auto broken_stuff = segments
   | transform([](auto s) { 
       return s | transform(polarToCartesian) | reverse; 
     });
@@ -1172,7 +1342,7 @@ auto segmentsInCartesianCoordinates = segments
 
 Explanation by [@gnzlbg](https://github.com/gnzlbg): 
 
-> `[](auto s) { return s | reverse; }` creates a dangling view. 
+> `[](auto s) { return s | reverse; }` creates a **dangling view**. 
 > The inner vector will be copied into the `s` argument (the lambda stack frame), 
 > and `| reverse` creates a view (that is, a pair of pointers) into this local vector. 
 > The problem is that this vector will be destroyed on scope exit (freeing the memory), 
@@ -1219,40 +1389,35 @@ int main() {
 }
 ```
 
----
-
-# Maps
-
-Extract the values from a dictionary
-
-```c++
-std::map<int, std::wstring> ss = 
-    { {1,L"1"}, 
-      {2,L"2"}, 
-      {3,L"3"} };
-auto rng = ss | ranges::view::reverse | ranges::view::values;
-```
-
 
 
 ---
 
-# Some More Tips and Tricks
+# Not in this Talk (Same Semantic as STL)
 
-Compare ranges (see this code live on [Wandbox](https://wandbox.org/permlink/drelV5N7D53atok6)): 
-
-```c++
-int main() {
-    ranges::view::iota;
-    ranges::view::reverse;
-
-    std::vector<int> vec{5,4,3,2,1,0};
-    assert(`ranges::equal`(
-        vec, 
-        ints(0, 6) | reverse));
-}
+```
+adjacent_find, all_of, any_of, binary_search, copy, copy_backward, 
+copy_if, copy_n, count, count_if, equal, equal_range, fill, fill_n, 
+find, find_end, find_first_of, find_if, find_if_not, for_each, 
+for_each_n, generate, generate_n, heap_algorithm, inplace_merge, 
+is_partitioned, is_sorted, is_sorted_until, lexicographical_compare, 
+lower_bound, max, max_element, merge, min, min_element, minmax, 
+minmax_element, mismatch, move, move_backward, none_of, nth_element, 
+partial_sort, partial_sort_copy, partition, partition_copy, 
+partition_point, permutation, remove, remove_copy, remove_copy_if, 
+remove_if, replace, replace_copy, replace_copy_if, replace_if, 
+reverse, reverse_copy, rotate, rotate_copy, sample, search, search_n, 
+set_algorithm, shuffle, sort, stable_partition, stable_sort, 
+swap_ranges, tagspec, transform, unique, unique_copy, upper_bound
 ```
 
+---
+
+# There's more to come.
+
+> I see a great `std::future<std::ranges>` for `C++`.
+
+Next talk: "**DejaVu with RxCpp: Ranges for Values Distributed in Time**" 
 
 
 ---
@@ -1270,42 +1435,6 @@ template: inverse
 
 ]
 
----
-
-# Gimme that Old Time Religion (2)
-
-.split-70[
-.column[
-
-Scott Meyer's perfect version of a map search and update 
-```c++
-typename MapType::iterator lb =			
-    m.lower_bound(k);					
-
-if (lb != m.end() &&						
-    !(m.key_comp()(k, lb->first))) {	
-    lb->second = v;							
-    return lb;								
-}										
-else {
-    typedef typename MapType::value_type MVT;
-    return m.insert(lb, MVT(k, v));
-}									
-```
-]
-.column[
-
-![](images/EffectiveSTLCover.jpeg) 
-&nbsp;<br>
-&nbsp;<br>
-&nbsp;<br>
-&nbsp;<br>
-&nbsp;<br>
-&nbsp;<br>
-&nbsp;<br>
-
-]
-] 
 
 
 
