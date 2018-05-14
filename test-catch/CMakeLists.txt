@@ -36,7 +36,10 @@ add_executable(some_unit_test_using_catch
     yield_if.cpp
     remove_if.cpp
     set_operations.cpp
-    dangling_references.cpp)
+    dangling_references.cpp
+    partitioning.cpp
+    generating_sequences.cpp
+    accessing_elements.cpp)
 
 #target_link_libraries(some_unit_test_using_catch
 #    arithmetics)

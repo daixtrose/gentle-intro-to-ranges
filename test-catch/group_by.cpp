@@ -66,8 +66,13 @@ SCENARIO("group_by and join work well together", "[set operations]")
                     | transform([=](auto g) { 
                         g |= ranges::action::sort(is_younger); return g; });     
 
-
-    	        ranges::copy(join(each_group_sorted_by_age), ranges::ostream_iterator<Person>(std::cout, "\n"));
+                // You can use copy
+                // ranges::copy(join(each_group_sorted_by_age), ranges::ostream_iterator<Person>(std::cout, "\n"));
+                // or output directly
+                std::cout << join(each_group_sorted_by_age) << std::endl;
+    	        
+                // also possible:
+                // std::cout << (people | all) << std::endl;
 
                 std::cout << "\n------------------------------------------------------------------------\n";
                 std::cout << "--> Eldest in every family:\n";
