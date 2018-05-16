@@ -25,6 +25,11 @@ The unit tests in this repository are demos. They do not aim at a full test of t
 git clone --recursive https://github.com/daixtrose/gentle-intro-to-ranges
 cd gentle-intro-to-ranges
 ``` 
+
+### Read the talk
+
+Open `talk/a-gentle-intro-to-ranges-v3.html` in a decent web browser, press F11, then enjoy.
+
 ### Prepare for a build
 
 ```bash
@@ -50,4 +55,3 @@ or
 ctest -VV
 ```
 for detailed information.
-```
