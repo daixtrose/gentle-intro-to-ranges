@@ -385,6 +385,7 @@ template: inverse
 
 .accent[
 ### Say Goodbye to STL the Way You (Probably Don't) Know It
+Duration: 1:07:42 (#NoEstimates)
 ]
 
 
@@ -432,7 +433,18 @@ layout: false
 ]
 
   
+---
 
+class: middle
+
+.center[
+
+# Where do we come from? 
+
+.accent[
+### Looking Back Over My Shoulder
+]
+]
 
 ---
 
@@ -465,7 +477,7 @@ layout: false
 
 **Example**: Scott Meyer's perfect version of a map search and update 
 ```c++
-typename MapType::iterator lb =			
+typename std::map<double>::iterator lb =			
     m.lower_bound(k);					
 
 if (lb != m.end() &&						
@@ -474,7 +486,8 @@ if (lb != m.end() &&
     return lb;								
 }										
 else {
-    typedef typename MapType::value_type MVT;
+    typedef typename 
+        std::map<double>::value_type MVT;
     return m.insert(lb, MVT(k, v));
 }									
 ```
@@ -493,6 +506,18 @@ else {
 ]
 ] 
 
+---
+
+class: middle
+
+.center[
+
+# A Short History of C++ Ranges 
+
+.accent[
+### As always incompl and written by the winners
+]
+]
 
 ---
 
@@ -513,6 +538,7 @@ Video [here](https://archive.org/details/AndreiAlexandrescuKeynoteBoostcon2009)
   - library help like [Boost.Iterator](https://www.boost.org/doc/libs/1_67_0/libs/iterator/doc/index.html) in order to get things right.
 
 
+  
 ---
 
 # Ranges 
@@ -520,8 +546,9 @@ Video [here](https://archive.org/details/AndreiAlexandrescuKeynoteBoostcon2009)
 - Many attempts/proposals, e.g.
   - [Boost.Range](https://www.boost.org/doc/libs/1_67_0/libs/range/doc/html/index.html) Version 1 and 2
   - Eric Niebler: 3 (!) versions
-- Rest of the talk deliberately ignores all other attempts, 
-  - shows application of Eric Niebler's [ranges-v3](https://github.com/ericniebler/range-v3) for C++11/14/17
+  
+> The rest of the talk deliberately ignores all other attempts 
+> and gives an introduction to Eric Niebler's [ranges-v3](https://github.com/ericniebler/range-v3) for C++11/14/17
 
 
 
@@ -548,6 +575,19 @@ Video [here](https://archive.org/details/AndreiAlexandrescuKeynoteBoostcon2009)
 ![](images/NieblerTweet2.png) 
 ]
 ] 
+
+---
+
+class: middle
+
+.center[
+
+# What are Ranges? 
+
+.accent[
+### That's simple, isn't it?
+]
+]
 
 ---
 
@@ -632,7 +672,18 @@ its limited expressiveness, but
 
 > Ranges are a contribution to making C++ easier to write and reason about
 
+---
 
+class: middle
+
+.center[
+
+# Ranges by Example   
+
+.accent[
+### To code or not to code, that is the question.
+]
+]
 
 ---
 
@@ -691,7 +742,7 @@ auto plusTen = [](auto const v) { return v + 10; };
 ### STL Approach
 
 ```c++
-auto composition = [](auto v) { 
+auto composition = [=](auto v) { 
     return plusTen(timesTwo(v)); 
 });
 
@@ -874,7 +925,7 @@ This is useful e.g. for DEBUG output:
 
 ```c++
 std::vector<double> v;                    
-std::cerr << ( v | ranges::view::`all` ) << std::endl; 
+std::cerr << `(` v | ranges::view::`all` `)` << std::endl; 
 ```
 
 
@@ -1005,11 +1056,11 @@ std::vector<int> numbers{3, 1, 2, 3, 3, 4, 3, 5, 6};
 using ranges::action::unique;
 using ranges::action::sort;
 
-numbers |= sort | unique; 
+numbers |= `sort | unique`; 
 REQUIRE(equal(numbers, std::vector<int>{1, 2, 3, 4, 5, 6}));
 
 // Instead of in-place treatment you can always explicitly request a copy 
-auto numbers_sorted_and_unique = numbers | copy | sort | unique;  
+auto numbers_sorted_and_unique = `numbers | copy` | sort | unique;  
 ```
 
 
@@ -1129,16 +1180,19 @@ C# has `IEnumerable.Empty` (the neutral element of addition). AFAIK ranges-v3 do
 
 ---
 
+# Generating Sequences
+
 ## A Range of Numbers
 
 Stolen from https://github.com/ericniebler/range-v3/blob/master/test/view/iota.cpp
 ```c++
-::check_equal(view::ints | view::take(10), {0,1,2,3,4,5,6,7,8,9});
-::check_equal(view::ints(0) | view::take(10), {0,1,2,3,4,5,6,7,8,9});
-::check_equal(view::ints(0,9), {0,1,2,3,4,5,6,7,8});
+view::ints | view::take(10)    // -> {0,1,2,3,4,5,6,7,8,9}
+view::ints(0) | view::take(10) // -> {0,1,2,3,4,5,6,7,8,9}
+view::ints(0,9)                // -> {0,1,2,3,4,5,6,7,8}
 
-::check_equal(view::closed_indices(0,9), {0,1,2,3,4,5,6,7,8,9});
+view::closed_indices(0,9)      // -> {0,1,2,3,4,5,6,7,8,9}
 
+// l a z y  
 auto chars = view::ints(std::numeric_limits<char>::min(),
                         std::numeric_limits<char>::max());
 ```
@@ -1153,7 +1207,7 @@ auto chars = view::ints(std::numeric_limits<char>::min(),
 using ranges::view::generate;
 using ranges::view::take;
 
-auto rng = generate([=]() {
+auto rng = `generate`([`=`]() {
     // ... arbitrary calculation with side effects ... 
     return result;
     });
@@ -1179,19 +1233,22 @@ auto rng = view::repeat(9) | view::take(10);
 
 # Accessing elements
 
-# At 
+## At 
 
 ```c++
 std::vector<int> vi{1,2,3,4};
 CHECK(ranges::index(vi, 0) == 1);
 CHECK(ranges::index(vi, 1) == 2);
-CHECK(ranges::index(vi, 2) == 3);
-CHECK(ranges::index(vi, 3) == 4);
+// etc.
 
 CHECK(ranges::at(vi, 0) == 1);
 CHECK(ranges::at(vi, 1) == 2);
-CHECK(ranges::at(vi, 2) == 3);
-CHECK(ranges::at(vi, 3) == 4);
+// etc. 
+
+// Does not compile if random access iterator not available
+// std::list<int> li{1,2,3,4};   
+// auto rng = li | ranges::view::all;
+// CHECK(ranges::at(li, 0) == 1);
 ```
 
 ---
@@ -1200,11 +1257,11 @@ CHECK(ranges::at(vi, 3) == 4);
 
 ## First / First or Default
 
-`AFAIK n.a.` better use `*begin(rng)` 
+`AFAIK n.a.` probably use `*begin(rng)` 
 
 ## Last / Last or Default 
 
-`AFAIK n.a.` 
+`AFAIK n.a.` probably use `*begin(rng | reverse)`
 
 ## Single
 
@@ -1226,6 +1283,39 @@ std::map<int, std::wstring> m =
 
 auto keys = m | ranges::view::reverse | ranges::view::keys;
 auto vals = m | ranges::view::reverse | ranges::view::values;
+```
+
+
+---
+
+class: middle
+
+.center[
+
+# Real World Examples
+
+.accent[
+### Ranges in Action
+]
+]
+
+---
+
+# What are Ranges?
+
+> Ranges are a contribution to making C++ easier to write and reason about.
+
+       
+
+```c++
+
+
+
+auto filteredAndInCartesianCoordinates = coordinates
+        | remove_if(outsideOfReasonableRange)
+        | remove_if(is_inf_or_nan)
+        | transform(polarToCartesian)
+        | reverse;
 ```
 
 ---
@@ -1255,6 +1345,19 @@ selectNearestSegmentToAngleZero(
 }
 ```
 
+---
+
+class: middle
+
+.center[
+
+# How I lost my reputation
+
+.accent[
+### Si tacuisses, philosophus mansisses 
+       
+]
+]
 
 ---
 
@@ -1389,7 +1492,19 @@ int main() {
 }
 ```
 
+---
 
+class: middle
+
+.center[
+
+# Closing Remarks
+
+.accent[
+### The end is near. 
+       
+]
+]
 
 ---
 
@@ -1417,8 +1532,11 @@ swap_ranges, tagspec, transform, unique, unique_copy, upper_bound
 
 > I see a great `std::future<std::ranges>` for `C++`.
 
-Next talk: "**DejaVu with RxCpp: Ranges for Values Distributed in Time**" 
-
+## Next talk
+.accent[
+### Reactive Extensions: Ranges for Values Distributed in Time 
+      
+]
 
 ---
 
